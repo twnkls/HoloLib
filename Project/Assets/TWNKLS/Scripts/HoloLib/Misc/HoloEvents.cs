@@ -35,8 +35,11 @@ namespace com.twnkls.HoloLib.Misc
 {
     public class HoloEvents
     {
-        public static string ON_SELECT     = "OnSelect";
-        public static string ON_HOLD_START = "OnHoldStart";
-        public static string ON_HOLD_END   = "OnHoldEnd";
+        public static string ON_SELECT           = "OnSelect";
+        public static string ON_HOLD_START       = "OnHoldStart";
+        public static string ON_HOLD_END         = "OnHoldEnd";
+        public static string ON_MANIPULATE_START = "OnManipulateStart";
+        public static string ON_MANIPULATE       = "OnManipulate";
+        public static string ON_MANIPULATE_END   = "OnManipulateEnd";
     }
 }

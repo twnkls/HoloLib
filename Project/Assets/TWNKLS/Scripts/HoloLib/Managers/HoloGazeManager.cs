@@ -23,18 +23,37 @@ SOFTWARE.
 
 /**
  * 
+ *  com.twnkls.HoloLib.HoloGazeHit
+ *  
+ *  Dataholder for raycast hits.
+ *  
+ *  Author : Robin Kollau
+ *  Version: 1.0.0
+ *  Date   : 11 11 2016 
+ *  
+ *  ------------------------------------------
+ *  
  *  com.twnkls.HoloLib.HoloGazeManager
  *  
  *  Updates the user head information.
  *  Casts a ray in the head direction.
  * 
  *  Author : Robin Kollau
- *  Version: 1.0.1
- *  Date   : 10 08 2016 
+ *  Version: 1.0.2
+ *  Date   : 11 11 2016 
  * 
  */
-namespace com.twnkls.HoloLib
+namespace com.twnkls.HoloLib.Managers
 {
+    //GAZEHIT
+    public class HoloGazeHit
+    {
+        public UnityEngine.RaycastHit RayHit;
+        public bool HasHit = false;
+    }
+
+
+    //HOLOGAZEMANAGER
     public class HoloGazeManager
     {
         //delegates.
@@ -47,13 +66,27 @@ namespace com.twnkls.HoloLib
         public delegate void OnHoldEndEvent();
         public OnHoldEndEvent onHoldEndDelegate;
 
+        public delegate void OnManipulateStartEvent();
+        public OnManipulateStartEvent onManipulationStartDelegate;
+
+        public delegate void OnManipulateEvent();
+        public OnManipulateEvent onManipulationDelegate;
+
+        public delegate void OnManipulateEndEvent();
+        public OnManipulateEndEvent onManipulationEndDelegate;
+
+
         //publics.
         public UnityEngine.GameObject FocusedObject { get; private set; }
-        public HoloHead Head { private set; get; }
+        public UnityEngine.GameObject ManipulationObject { get; private set; }
+        public Misc.HoloHead Head { private set; get; }
+        public HoloGazeHit GazeHit { private set; get; }
 
         //privates
         private UnityEngine.RaycastHit _rayHit;
+        private HoloGazeHit _gazeHit;
         private UnityEngine.VR.WSA.Input.GestureRecognizer _gestureRecognizer;
+        //private UnityEngine.VR.WSA.Input.InteractionManager _interactionManager;
 
 
         /// <summary>
@@ -64,13 +97,29 @@ namespace com.twnkls.HoloLib
         private HoloGazeManager()
         {
             //head instance.
-            Head = new HoloHead();
+            Head = new Misc.HoloHead();
+
+            //Gaze hit instance.
+            GazeHit = new HoloGazeHit();
 
             //gesture recognizer.
             _gestureRecognizer = new UnityEngine.VR.WSA.Input.GestureRecognizer();
+
+            //set recognizable gestures.
+            _gestureRecognizer.SetRecognizableGestures(UnityEngine.VR.WSA.Input.GestureSettings.Tap   |
+                                                        UnityEngine.VR.WSA.Input.GestureSettings.Hold |
+                                                        UnityEngine.VR.WSA.Input.GestureSettings.ManipulationTranslate |
+                                                        UnityEngine.VR.WSA.Input.GestureSettings.DoubleTap );
+
+            //attach listeners.
             _gestureRecognizer.TappedEvent                += OnTapEvent;
             _gestureRecognizer.HoldStartedEvent           += OnHoldStartedEvent;
-            _gestureRecognizer.HoldCompletedEvent         += OnHoldCompletedEvent;          
+            _gestureRecognizer.HoldCompletedEvent         += OnHoldCompletedEvent;
+            _gestureRecognizer.ManipulationStartedEvent   += OnManipulationStartedEvent;
+            _gestureRecognizer.ManipulationUpdatedEvent   += OnManipulationUpdateEvent;
+            _gestureRecognizer.ManipulationCompletedEvent += OnManipulationEndedEvent;
+
+            //start recognizing.
             _gestureRecognizer.StartCapturingGestures();
         }
         public static HoloGazeManager GetInstance()
@@ -134,13 +183,57 @@ namespace com.twnkls.HoloLib
 
 
         /// <summary>
-        /// Gets the ray hit.
+        /// Fired when user started manipulating the focussed object.
         /// </summary>
-        public UnityEngine.RaycastHit RayHit
+        /// <param name="source">InteractionSourceKind</param>
+        /// <param name="cumulativeData">Vector3</param>
+        /// /// <param name="head_ray">Ray</param>
+        private void OnManipulationStartedEvent(UnityEngine.VR.WSA.Input.InteractionSourceKind source, UnityEngine.Vector3 cumulativeData, UnityEngine.Ray head_ray)
         {
-            get
+            if (onManipulationStartDelegate != null)
+                onManipulationStartDelegate();
+
+            if (this.FocusedObject != null)
             {
-                return _rayHit;
+                this.ManipulationObject = this.FocusedObject;
+                this.ManipulationObject.SendMessageUpwards(Misc.HoloEvents.ON_MANIPULATE_START, cumulativeData);
+            }
+        }
+
+
+        /// <summary>
+        /// Fired when user is manipulating the manipulation object.
+        /// </summary>
+        /// <param name="source">InteractionSourceKind</param>
+        /// <param name="cumulativeData">Vector3</param>
+        /// /// <param name="head_ray">Ray</param>
+        private void OnManipulationUpdateEvent(UnityEngine.VR.WSA.Input.InteractionSourceKind source, UnityEngine.Vector3 cumulativeData, UnityEngine.Ray head_ray)
+        {
+            if (onManipulationDelegate != null)
+                onManipulationDelegate();
+
+            if (this.ManipulationObject != null)
+            {
+                this.ManipulationObject.SendMessageUpwards(Misc.HoloEvents.ON_MANIPULATE, cumulativeData);
+            }
+        }
+
+
+        /// <summary>
+        /// Fired when user has completed manipulating the manipulation object.
+        /// </summary>
+        /// <param name="source">InteractionSourceKind</param>
+        /// <param name="cumulativeData">Vector3</param>
+        /// /// <param name="head_ray">Ray</param>
+        private void OnManipulationEndedEvent(UnityEngine.VR.WSA.Input.InteractionSourceKind source, UnityEngine.Vector3 cumulativeData, UnityEngine.Ray head_ray)
+        {
+            if (onManipulationEndDelegate != null)
+                onManipulationEndDelegate();
+
+            if (this.ManipulationObject != null)
+            {
+                this.ManipulationObject.SendMessageUpwards(Misc.HoloEvents.ON_MANIPULATE_END, cumulativeData);
+                this.ManipulationObject = null;
             }
         }
 
@@ -154,10 +247,13 @@ namespace com.twnkls.HoloLib
             //create prevFocusedObject
             UnityEngine.GameObject prevFocusedObject = FocusedObject;
 
+            //shoot ray.
+            GazeHit.HasHit = UnityEngine.Physics.Raycast(Head.Position, Head.Direction, out GazeHit.RayHit);
+
             //Shoot ray and store result.
-            if (UnityEngine.Physics.Raycast(Head.Position, Head.Direction, out _rayHit))
+            if (GazeHit.HasHit)
             {
-                this.FocusedObject = this.RayHit.collider.gameObject;
+                this.FocusedObject = this.GazeHit.RayHit.collider.gameObject;
                 if (this.FocusedObject.GetComponent<Unity.HoloObject>() != null)
                     if (this.FocusedObject.GetComponent<Unity.HoloObject>().HasFocus == false)
                         this.FocusedObject.GetComponent<Unity.HoloObject>().OnFocusIn();

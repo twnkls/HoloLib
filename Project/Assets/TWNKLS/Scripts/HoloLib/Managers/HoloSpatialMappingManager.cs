@@ -31,7 +31,7 @@ SOFTWARE.
  *  Date   : 12 08 2016 
  * 
  */
-namespace com.twnkls.HoloLib
+namespace com.twnkls.HoloLib.Managers
 {
     public class HoloSpatialMappingManager
     {

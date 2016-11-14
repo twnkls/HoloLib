@@ -22,30 +22,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 /**
- * Example Object
- * Sample script for attaching a gameobject on a hololens surface when selected.
+ * Drag and Drop Object
+ * Sample script for dragging and dropping a gameobject.
  * 
  * @author  : Robin Kollau
  * @version : 1.0.0
- * @date    : 31 10 2016 
+ * @date    : 14 11 2016 
  * 
  */
-
 using com.twnkls.HoloLib.Unity;
-using com.twnkls.HoloLib.Misc;
-public class ExampleObject : HoloObject
-{
+using UnityEngine;
+
+public class DragAndDropObject : HoloObject {
 
     /// <summary>
-    /// Places this object on a surface.
+    /// Override OnManipulate to add movement placement.
     /// </summary>
-    public override void Update()
+    /// <param name="movement">Vector3</param>
+    public override void OnManipulate(Vector3 movement)
     {
-        //when user selects this object.
-        if( _isSelected)
-        {
-            //places this object on the surface.
-            HoloUtils.PlaceOnSurface(this.transform);
-        }
+        //call base.
+        base.OnManipulate(movement);
+
+        //define a scalefactor.
+        float scaleFactor       = 2.0f;
+
+        //implement movement based on manipulation.
+        this.transform.position = this.ManipulateStartPosition + (movement*scaleFactor);
     }
 }

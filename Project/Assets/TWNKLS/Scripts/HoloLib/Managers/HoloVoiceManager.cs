@@ -33,7 +33,7 @@ SOFTWARE.
 */
 using System.Collections.Generic;
 using System.Linq;
-namespace com.twnkls.HoloLib
+namespace com.twnkls.HoloLib.Managers
 {
     public class HoloVoiceManager
     {

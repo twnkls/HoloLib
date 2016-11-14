@@ -27,8 +27,8 @@ SOFTWARE.
  *  places the attached gameobject on gazed target point
  * 
  *  Author : Robin Kollau
- *  Version: 1.0.0
- *  Date   : 04 08 2016 
+ *  Version: 1.0.1
+ *  Date   : 11 11 2016 
  * 
  */
 namespace com.twnkls.HoloLib.Unity
@@ -38,12 +38,19 @@ namespace com.twnkls.HoloLib.Unity
         // Update is called once per frame
         void Update()
         {
-            //Get the ray from the gazemanager.
-            UnityEngine.RaycastHit ray = HoloGazeManager.GetInstance().RayHit;
-
-            //set this cursor.
-            this.transform.localPosition = ray.point;
-            this.transform.localRotation = UnityEngine.Quaternion.FromToRotation(UnityEngine.Vector3.up, ray.normal);
+            //Check if GazeManager has hit with ray..
+           if(Managers.HoloGazeManager.GetInstance().GazeHit.HasHit )
+            {
+                //set this cursor.
+                this.transform.localPosition = Managers.HoloGazeManager.GetInstance().GazeHit.RayHit.point;
+                this.transform.localRotation = UnityEngine.Quaternion.FromToRotation(UnityEngine.Vector3.up, Managers.HoloGazeManager.GetInstance().GazeHit.RayHit.normal);
+            }
+            else
+            {
+                //set this cursor.
+                Misc.HoloUtils.PlaceInFrontOfUser(this.transform, 10.0f);
+                this.transform.localRotation = UnityEngine.Quaternion.FromToRotation(UnityEngine.Vector3.up, UnityEngine.Camera.main.transform.forward );
+            }
         }
     }
 }

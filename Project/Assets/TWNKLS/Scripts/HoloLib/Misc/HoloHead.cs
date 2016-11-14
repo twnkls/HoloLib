@@ -31,7 +31,7 @@ SOFTWARE.
  *  Date   : 04 08 2016 
  * 
  */
-namespace com.twnkls.HoloLib
+namespace com.twnkls.HoloLib.Misc
 {
     public class HoloHead
     {

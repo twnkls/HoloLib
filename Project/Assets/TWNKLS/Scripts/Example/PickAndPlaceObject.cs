@@ -22,33 +22,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 /**
- *  com.twnkls.HoloLib.Interfaces.IHoloInteractible
- *  
- *  Interface for interactible Hololens objects.
+ * Pick and Place Object
+ * Sample script for attaching a gameobject on a hololens surface OR
+ * attaching in front of the user ( when no surface found ) when selected.
  * 
- *  Author : Robin Kollau
- *  Version: 1.0.0
- *  Date   : 04 08 2016 
+ * @author  : Robin Kollau
+ * @version : 1.0.1
+ * @date    : 11 11 2016 
  * 
  */
-namespace com.twnkls.HoloLib.Interfaces
+
+using com.twnkls.HoloLib.Unity;
+using com.twnkls.HoloLib.Misc;
+public class PickAndPlaceObject : HoloObject
 {
-    public interface IHoloInteractible
+
+    /// <summary>
+    /// Places this object on a surface.
+    /// </summary>
+    public override void Update()
     {
-        //focus.
-        void OnFocusIn();
-        void OnFocusOut();
-
-        //selection.
-        void OnSelect();
-
-        //holding.
-        void OnHoldStart(UnityEngine.Ray head_ray);
-        void OnHoldEnd(UnityEngine.Ray head_ray);
-
-        //manipulation.
-        void OnManipulateStart( UnityEngine.Vector3 movement);
-        void OnManipulate( UnityEngine.Vector3 movement);
-        void OnManipulateEnd( UnityEngine.Vector3 movement);
+        //when user selects this object.
+        if( _isSelected)
+        {
+            //Check if we can place this object on a surface...
+            if(HoloUtils.PlaceOnSurface(this.transform) == false)
+            {
+                //if no surface to place, place this in front of user.
+                HoloUtils.PlaceInFrontOfUser(this.transform, 5.0f);
+            }  
+        }
     }
 }

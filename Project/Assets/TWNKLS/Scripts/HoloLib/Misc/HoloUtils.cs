@@ -27,8 +27,8 @@ SOFTWARE.
  *  Holds several utility functions
  * 
  *  Author : Robin Kollau
- *  Version: 1.0.0
- *  Date   : 18 08 2016 
+ *  Version: 1.0.1
+ *  Date   : 11 11 2016 
  * 
  */
 namespace com.twnkls.HoloLib.Misc
@@ -38,17 +38,22 @@ namespace com.twnkls.HoloLib.Misc
         /// <summary>
         /// Place an object on the HoloSurface.
         /// </summary>
-        public static void PlaceOnSurface(UnityEngine.Transform target)
+        public static bool PlaceOnSurface(UnityEngine.Transform target, bool applyXRotation = false, bool applyYRotation = false, bool applyZRotation = false  )
         {
             UnityEngine.RaycastHit hit;
             if ( HoloUtils.FindPointOnSurface(50.0f, out hit))
             {
                 target.position = hit.point;
                 UnityEngine.Quaternion toQuat = UnityEngine.Quaternion.FromToRotation(UnityEngine.Vector3.back, hit.normal);
-                toQuat.x = 0;
-                toQuat.z = 0;
-                target.rotation = UnityEngine.Quaternion.Lerp(target.rotation, toQuat, 0.5f);
+                if(!applyXRotation) toQuat.x = 0;
+                if(!applyYRotation) toQuat.y = 0;
+                if(!applyZRotation) toQuat.z = 0;
+                if ( applyXRotation || applyYRotation || applyZRotation)
+                    target.rotation = UnityEngine.Quaternion.Lerp(target.rotation, toQuat, 0.5f);
+                
+                return true;
             }
+            return false;
         }
 
 
@@ -76,7 +81,7 @@ namespace com.twnkls.HoloLib.Misc
         /// </summary>
         /// <param name="subject">UnityEngine.Transform</param>
         /// <param name="distance">float</param>
-        public static void PlaceInFrontOfUser(UnityEngine.Transform subject, float distance)
+        public static void PlaceInFrontOfUser(UnityEngine.Transform subject, float distance, bool applyXRotation = false, bool applyYRotation = false, bool applyZRotation = false)
         {
             //place window in front of user.
             UnityEngine.Transform user_transform = UnityEngine.Camera.main.transform;
@@ -86,7 +91,12 @@ namespace com.twnkls.HoloLib.Misc
 
             //set location and rotation.
             subject.position = toPos;
-            subject.rotation = user_rotation;
+
+            if (!applyXRotation) user_rotation.x = 0;
+            if (!applyYRotation) user_rotation.y = 0;
+            if (!applyZRotation) user_rotation.z = 0;
+            if ( applyXRotation || applyYRotation || applyZRotation )
+                subject.rotation = user_rotation;
 
             //check if a surface is present closer than distance,
             // if so... we place the subject on that surface.
@@ -109,11 +119,11 @@ namespace com.twnkls.HoloLib.Misc
         /// <returns>True if the ray intersects with a Collider, otherwise false.</returns>
         public static bool FindPointOnSurface(float max_ray_length, out UnityEngine.RaycastHit hit)
         {
-            return UnityEngine.Physics.Raycast( HoloGazeManager.GetInstance().Head.Position,
-                                                HoloGazeManager.GetInstance().Head.Direction,
+            return UnityEngine.Physics.Raycast( Managers.HoloGazeManager.GetInstance().Head.Position,
+                                                Managers.HoloGazeManager.GetInstance().Head.Direction,
                                                 out hit,
                                                 max_ray_length,
-                                                HoloSpatialMappingManager.PhysicsRaycastMask);
+                                                Managers.HoloSpatialMappingManager.PhysicsRaycastMask);
         }
 
 

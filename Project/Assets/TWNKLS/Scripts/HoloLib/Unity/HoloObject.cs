@@ -39,6 +39,7 @@ namespace com.twnkls.HoloLib.Unity
         protected bool _isFocussed    = false;
         protected bool _isHolded      = false;
         protected bool _isSelected    = false;
+        protected bool _isManipulated = false;
 
         // Use this for initialization
         public virtual void Start()
@@ -69,6 +70,21 @@ namespace com.twnkls.HoloLib.Unity
         //holding.
         public virtual void OnHoldStart(UnityEngine.Ray head_ray){ _isHolded = true;  }
         public virtual void OnHoldEnd(UnityEngine.Ray head_ray)  { _isHolded = false; }
+
+        //manipulating.
+        public virtual UnityEngine.Vector3 ManipulateStartPosition {
+            get; private set;
+        }
+        public virtual void OnManipulateStart( UnityEngine.Vector3 movement ) {
+            ManipulateStartPosition = this.transform.position;
+            _isManipulated = true;
+        }
+        public virtual void OnManipulate     ( UnityEngine.Vector3 movement ) { _isManipulated = true;  }
+        public virtual void OnManipulateEnd  ( UnityEngine.Vector3 movement )
+        {
+            _isManipulated = false;
+            ManipulateStartPosition = this.transform.position;
+        }
 
         //placing.
         public virtual void PlaceOnSurface() { Misc.HoloUtils.PlaceOnSurface(this.transform); }

@@ -1,1 +1,7 @@
 Project/Library/
+Project/App/
+Project/Temp/
+Project/UWP/
+Project/.vs/
+Project/Assets/WSATestCertificate.pfx
+Project/Assets/WSATestCertificate.pfx.meta

@@ -27,8 +27,8 @@ SOFTWARE.
  *  Manages the com.twnkls.HoloLib internal components.
  * 
  *  Author : Robin Kollau
- *  Version: 1.0.0
- *  Date   : 04 08 2016 
+ *  Version: 1.0.1
+ *  Date   : 11 11 2016 
  * 
  */
 namespace com.twnkls.HoloLib.Unity
@@ -39,7 +39,7 @@ namespace com.twnkls.HoloLib.Unity
         [UnityEngine.SerializeField] public UnityEngine.Material WireframeMaterial;
         [UnityEngine.SerializeField] public UnityEngine.Vector3 SpatialMappingSize;
         [UnityEngine.SerializeField] public float SpatialMappingSpeed = 2.5f;
-        [UnityEngine.SerializeField] public HoloSpatialMappingManager.LOD MappingLOD;
+        [UnityEngine.SerializeField] public Managers.HoloSpatialMappingManager.LOD MappingLOD;
         [UnityEngine.SerializeField] public bool VisualizeMap   = false;
         [UnityEngine.SerializeField] public bool MappingEnabled = false;
         [UnityEngine.SerializeField] public float MappingDuration = 1.0f;
@@ -47,9 +47,10 @@ namespace com.twnkls.HoloLib.Unity
 
         //privates.
         private float _currentMappingTime = 0;
-        private HoloGazeManager _gazeManager;
-        private HoloVoiceManager _voiceManager;
-        private HoloSpatialMappingManager _mappingManager;
+        private Managers.HoloGazeManager _gazeManager;
+        private Managers.HoloHandsManager _handsManager;
+        private Managers.HoloVoiceManager _voiceManager;
+        private Managers.HoloSpatialMappingManager _mappingManager;
 
         // Use this for initialization
         void Awake()
@@ -58,7 +59,10 @@ namespace com.twnkls.HoloLib.Unity
             GazeManager.Update();
 
             //setup the voice manager.
-            VoiceManager.Init();
+           // VoiceManager.Init();
+
+            //setup the hands manager.
+            HandsManager.Init();
 
             //Setup spatial mapping.
             MappingManager.Init(this.gameObject);
@@ -74,13 +78,27 @@ namespace com.twnkls.HoloLib.Unity
         /// <summary>
         /// Gets the gaze manager.
         /// </summary>
-        public HoloGazeManager GazeManager
+        public Managers.HoloGazeManager GazeManager
         {
             get
             {
                 if(_gazeManager == null )
-                    _gazeManager = HoloGazeManager.GetInstance();
+                    _gazeManager = Managers.HoloGazeManager.GetInstance();
                 return _gazeManager;
+            }
+        }
+
+
+        /// <summary>
+        /// Gets the hands manager.
+        /// </summary>
+        public Managers.HoloHandsManager HandsManager
+        {
+            get
+            {
+                if (_handsManager == null)
+                    _handsManager = Managers.HoloHandsManager.GetInstance();
+                return _handsManager;
             }
         }
 
@@ -88,12 +106,12 @@ namespace com.twnkls.HoloLib.Unity
         /// <summary>
         /// Gets the voice recognition manager
         /// </summary>
-        public HoloVoiceManager VoiceManager
+        public Managers.HoloVoiceManager VoiceManager
         {
             get
             {
                 if (_voiceManager == null)
-                    _voiceManager = HoloVoiceManager.GetInstance();
+                    _voiceManager = Managers.HoloVoiceManager.GetInstance();
                 return _voiceManager;
             }
         }
@@ -102,12 +120,12 @@ namespace com.twnkls.HoloLib.Unity
         /// <summary>
         /// Gets the Spatial mapping manager.
         /// </summary>
-        public HoloSpatialMappingManager MappingManager
+        public Managers.HoloSpatialMappingManager MappingManager
         {
             get
             {
                 if(_mappingManager == null )
-                    _mappingManager = HoloSpatialMappingManager.GetInstance();
+                    _mappingManager = Managers.HoloSpatialMappingManager.GetInstance();
                 return _mappingManager;
             }
         }
