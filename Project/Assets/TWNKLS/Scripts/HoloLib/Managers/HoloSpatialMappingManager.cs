@@ -115,9 +115,10 @@ namespace com.twnkls.HoloLib.Managers
             _spatialMappingRenderer.surfaceParent = _targetObj;
 
             //set material.
-            _spatialMappingRenderer.currentRenderSetting = UnityEngine.VR.WSA.SpatialMappingRenderer.RenderSetting.None;
-            _spatialMappingRenderer.customMaterial = DrawMaterial;
+            _spatialMappingRenderer.visualMaterial = DrawMaterial;
+            _spatialMappingRenderer.renderState    = UnityEngine.VR.WSA.SpatialMappingRenderer.RenderState.None;
 
+            //set collider.
             _spatialMappingCollider = _targetObj.AddComponent<UnityEngine.VR.WSA.SpatialMappingCollider>();
             _spatialMappingCollider.surfaceParent = _targetObj;
             _spatialMappingCollider.layer = PhysicsLayer;
@@ -134,17 +135,17 @@ namespace com.twnkls.HoloLib.Managers
         {
             if (_spatialMappingRenderer != null )
             {
-                _spatialMappingRenderer.boxExtentsMeters        = _mappingSize;
+                _spatialMappingRenderer.halfBoxExtents          = _mappingSize;
                 _spatialMappingRenderer.secondsBetweenUpdates   = _mappingSpeed;
-                _spatialMappingRenderer.lod                     = (UnityEngine.VR.WSA.SpatialMappingBase.LODType)_levelOfDetail;
+                _spatialMappingRenderer.lodType                = (UnityEngine.VR.WSA.SpatialMappingBase.LODType)_levelOfDetail;
                 _spatialMappingRenderer.numUpdatesBeforeRemoval = _removalUpdateCount;
                 _spatialMappingRenderer.freezeUpdates           = !_mappingEnabled;
             }
             if (_spatialMappingCollider != null)
             {
-                _spatialMappingCollider.boxExtentsMeters        = _mappingSize;
+                _spatialMappingCollider.halfBoxExtents          = _mappingSize;
                 _spatialMappingCollider.secondsBetweenUpdates   = _mappingSpeed;
-                _spatialMappingCollider.lod                     = (UnityEngine.VR.WSA.SpatialMappingBase.LODType)_levelOfDetail;
+                _spatialMappingCollider.lodType                 = (UnityEngine.VR.WSA.SpatialMappingBase.LODType)_levelOfDetail;
                 _spatialMappingCollider.numUpdatesBeforeRemoval = _removalUpdateCount;
                 _spatialMappingCollider.freezeUpdates           = !_mappingEnabled;
             }
@@ -247,13 +248,12 @@ namespace com.twnkls.HoloLib.Managers
                 if (_visualize )
                 {
                     if (!Initialized) return;
-                    _spatialMappingRenderer.currentRenderSetting = UnityEngine.VR.WSA.SpatialMappingRenderer.RenderSetting.CustomMaterial;
-                    _spatialMappingRenderer.customMaterial = DrawMaterial;
+                    _spatialMappingRenderer.renderState = UnityEngine.VR.WSA.SpatialMappingRenderer.RenderState.Visualization;
                 }
                 else
                 {
                     if (!Initialized) return;
-                    _spatialMappingRenderer.currentRenderSetting = UnityEngine.VR.WSA.SpatialMappingRenderer.RenderSetting.None;
+                    _spatialMappingRenderer.renderState = UnityEngine.VR.WSA.SpatialMappingRenderer.RenderState.None;
                 }
             }
             get
